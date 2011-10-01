@@ -1,10 +1,11 @@
 local D, S, E = unpack(select(2, ...))
 
-local slotSize = 24
-local slotSpacing = 5
-
 local bagFrame = nil
 local bankFrame = nil
+
+if not S.bags.enable then
+	return
+end
 
 local function UpdateBag(bag)
 	
@@ -57,7 +58,7 @@ local function CreateBag(parent, bagID, numSlots, maxSlots)
 		slot:SetPushedTexture("")
 		slot:SetNormalTexture("")
 		slot:ClearAllPoints()
-		slot:SetSize(slotSize,slotSize)
+		slot:SetSize(S.bags.slotSize,S.bags.slotSize)
 		
 		local icon = _G[slot:GetName() .. "IconTexture"]
 		icon:SetTexCoord(.08, .92, .08, .92)
@@ -67,9 +68,9 @@ local function CreateBag(parent, bagID, numSlots, maxSlots)
 		if i == 1 then
 			slot:SetPoint("TOPLEFT", bag, "TOPLEFT", 0, 0)
 		elseif i % (1+maxSlots) == 0 then
-			slot:SetPoint("TOPLEFT", slots[i-maxSlots], "BOTTOMLEFT", 0, -slotSpacing)
+			slot:SetPoint("TOPLEFT", slots[i-maxSlots], "BOTTOMLEFT", 0, -S.bags.slotSpacing)
 		else
-			slot:SetPoint("LEFT", slots[i-1], "RIGHT", slotSpacing, 0)
+			slot:SetPoint("LEFT", slots[i-1], "RIGHT", S.bags.slotSpacing, 0)
 		end
 		
 		D.CreateBackground(slot)
@@ -84,8 +85,8 @@ local function CreateBag(parent, bagID, numSlots, maxSlots)
 	
 	local rowCount = ceil(numSlots / maxSlots)
 	bag:ClearAllPoints()
-	bag:SetHeight( (rowCount * slotSize) + ((rowCount-1) * slotSpacing) )
-	bag:SetWidth( (maxSlots * slotSize) + ((maxSlots-1) * slotSpacing) )
+	bag:SetHeight( (rowCount * S.bags.slotSize) + ((rowCount-1) * S.bags.slotSpacing) )
+	bag:SetWidth( (maxSlots * S.bags.slotSize) + ((maxSlots-1) * S.bags.slotSpacing) )
 	
 	bag:RegisterEvent("BAG_UPDATE", UpdateBag)
 	bag:RegisterEvent("MAIL_SEND_INFO_UPDATE", UpdateBag)
@@ -111,10 +112,10 @@ local function InitBag(parent, start, finish, specialFrame)
 		bags[i] = CreateBag(parent, i, GetContainerNumSlots(i), 16)
 		
 		if i == start then
-			bags[i]:SetPoint("TOPLEFT", specialFrame, "BOTTOMLEFT", 0, -(slotSpacing+slotSpacing))
+			bags[i]:SetPoint("TOPLEFT", specialFrame, "BOTTOMLEFT", 0, -(S.bags.slotSpacing+S.bags.slotSpacing))
 			width = bags[i]:GetWidth()
 		else
-			bags[i]:SetPoint("TOPLEFT", bags[i - 1], "BOTTOMLEFT", 0, -(slotSpacing+slotSpacing))
+			bags[i]:SetPoint("TOPLEFT", bags[i - 1], "BOTTOMLEFT", 0, -(S.bags.slotSpacing+S.bags.slotSpacing))
 		end
 		
 		height = height + bags[i]:GetHeight()
@@ -123,7 +124,7 @@ local function InitBag(parent, start, finish, specialFrame)
 
 	
 	parent:SetWidth( width )
-	parent:SetHeight( height + ((#bags + 1) * (slotSpacing + slotSpacing)))
+	parent:SetHeight( height + ((#bags + 1) * (S.bags.slotSpacing + S.bags.slotSpacing)))
 	
 	parent.Bags = bags
 	parent.InitComplete = true
@@ -139,7 +140,7 @@ local function InitBags(parent)
 	local currencyFrame = CreateFrame("Frame", nil, parent)
 	currencyFrame:SetPoint("TOPLEFT")
 	currencyFrame:SetPoint("TOPRIGHT")
-	currencyFrame:SetHeight(slotSize * 0.66) --2/3 ish
+	currencyFrame:SetHeight(S.bags.slotSize * 0.66) --2/3 ish
 	
 	currencyFrame.Gold = D.CreateFontString(currencyFrame, S.fonts.normal, S.fonts.default.size)
 	currencyFrame.Gold:SetPoint("TOPLEFT", currencyFrame, "TOPLEFT", 2, 0)
@@ -148,7 +149,7 @@ local function InitBags(parent)
 	
 	currencyFrame.CloseButton = CreateFrame("Button", nil, parent, "UIPanelCloseButton")
 	currencyFrame.CloseButton:SetPoint("TOPRIGHT", currencyFrame, "TOPRIGHT", 4, 4)
-	currencyFrame.CloseButton:SetSize(slotSize, slotSize)
+	currencyFrame.CloseButton:SetSize(S.bags.slotSize, S.bags.slotSize)
 	currencyFrame.CloseButton:GetNormalTexture():SetDesaturated(1)
 	currencyFrame.CloseButton:RegisterForClicks("AnyUp")
 	currencyFrame.CloseButton:SetScript("OnClick", function(self, btn)

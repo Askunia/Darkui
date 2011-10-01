@@ -27,6 +27,12 @@ S["stats"] = {
 	["fps"] = 2,
 }
 
+S["bags"] = {
+	["enable"] = false,
+	["slotSize"] = 24,
+	["slotSpacing"] = 5,
+}
+
 S["merchant"] = {
 	["autosellgreys"] = true,
 	["autorepair"] = true,
